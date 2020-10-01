@@ -1,2 +1,2 @@
-# Burlap-Sac
- Source code for the Burlap Sac mod for Minecraft.
+# Burlap-Sack
+ Source code for the Burlap Sack mod for Minecraft.
