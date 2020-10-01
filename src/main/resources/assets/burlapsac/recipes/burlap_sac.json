@@ -1,0 +1,32 @@
+
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "ABA",
+    "A A",
+    "AAA"
+  ],
+  "key":
+  {
+    "A":
+    [
+      {
+        "item": "burlapsac:burlap_fabric",
+        "data": 0
+      }
+    ],
+    "B":
+    [
+      {
+        "item": "minecraft:string",
+        "data": 0
+      }
+    ]
+  },
+  "result":
+  {
+    "item": "burlapsac:burlap_sac",
+    "data": 0
+  }
+}
