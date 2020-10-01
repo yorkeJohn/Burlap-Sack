@@ -1,4 +1,4 @@
-package yorke.burlapsac.common.items;
+package yorke.burlapsack.common.items;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -16,15 +16,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import yorke.burlapsac.common.BurlapSac;
+import yorke.burlapsack.common.BurlapSack;
 
-public class ItemBurlapSac extends Item
+public class ItemBurlapSack extends Item
 {
-	public ItemBurlapSac ()
+	public ItemBurlapSack ()
 	{
-		this.setRegistryName("burlap_sac");
-		this.setUnlocalizedName("burlap_sac");
-		this.setCreativeTab(BurlapSac.tabBurlapSac);
+		this.setRegistryName("burlap_sack");
+		this.setUnlocalizedName("burlap_sack");
+		this.setCreativeTab(BurlapSack.tabBurlapSack);
 		this.setMaxStackSize(16);
 	}
 

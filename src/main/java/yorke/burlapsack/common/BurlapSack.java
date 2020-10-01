@@ -1,4 +1,4 @@
-package yorke.burlapsac.common;
+package yorke.burlapsack.common;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.MinecraftForge;
@@ -6,14 +6,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import yorke.burlapsac.common.lib.BurlapSacCreativeTab;
-import yorke.burlapsac.common.lib.LibInfo;
-import yorke.burlapsac.common.registry.ItemRegistry;
+import yorke.burlapsack.common.lib.BurlapSackCreativeTab;
+import yorke.burlapsack.common.lib.LibInfo;
+import yorke.burlapsack.common.registry.ItemRegistry;
 
 @Mod (modid = LibInfo.MODID, name = LibInfo.NAME, version = LibInfo.VERSION)
-public class BurlapSac
+public class BurlapSack
 {
-	public static final CreativeTabs tabBurlapSac = new BurlapSacCreativeTab("burlapsac");
+	public static final CreativeTabs tabBurlapSack = new BurlapSackCreativeTab("burlapsack");
 
 	@EventHandler
 	public void preInit (FMLPreInitializationEvent event)
