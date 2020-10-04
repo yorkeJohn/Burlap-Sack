@@ -1,5 +1,8 @@
 package yorke.burlapsack.common.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -20,6 +23,8 @@ import yorke.burlapsack.common.BurlapSack;
 
 public class ItemBurlapSack extends Item
 {
+	private static List<Class<?>> blacklist = new ArrayList<>();
+
 	public ItemBurlapSack ()
 	{
 		this.setRegistryName("burlap_sack");
@@ -32,7 +37,7 @@ public class ItemBurlapSack extends Item
 	public boolean itemInteractionForEntity (ItemStack item, EntityPlayer player, EntityLivingBase target, EnumHand hand)
 	{
 		ItemStack stack = player.getHeldItem(hand);
-		if (!stack.hasTagCompound() && ! (target instanceof IMob) && target.isNonBoss())
+		if (!stack.hasTagCompound() && ! (target instanceof IMob) && target.isNonBoss() && !blacklist.contains(target.getClass()))
 		{
 			NBTTagCompound tag = new NBTTagCompound();
 			if (!target.writeToNBTAtomically(tag)) return false;
@@ -92,5 +97,15 @@ public class ItemBurlapSack extends Item
 			else return EnumActionResult.PASS;
 		}
 		return EnumActionResult.PASS;
+	}
+
+	/**
+	 * Adds an entity to the Burlap Sack blacklist
+	 * 
+	 * @param entityClass The entity to blacklist's class
+	 */
+	public static void blacklistEntity (Class<?> entityClass)
+	{
+		blacklist.add(entityClass);
 	}
 }
