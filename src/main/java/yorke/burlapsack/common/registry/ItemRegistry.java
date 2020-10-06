@@ -13,7 +13,8 @@ import yorke.burlapsack.common.items.ItemBurlapSack;
 @Mod.EventBusSubscriber
 public class ItemRegistry
 {
-	public static Item BURLAP_FABRIC = new Item().setRegistryName("burlap_fabric").setUnlocalizedName("burlap_fabric").setCreativeTab(BurlapSack.tabBurlapSack);
+	public static Item BURLAP_FABRIC = new Item().setRegistryName("burlap_fabric")
+			.setUnlocalizedName("burlap_fabric").setCreativeTab(BurlapSack.tabBurlapSack);
 	public static ItemBurlapSack BURLAP_SACK = new ItemBurlapSack();
 
 	@SubscribeEvent
@@ -32,6 +33,7 @@ public class ItemRegistry
 
 	private static void registerRenderer (Item item)
 	{
-		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(
+				item.getRegistryName(), "inventory"));
 	}
 }

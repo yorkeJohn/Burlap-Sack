@@ -13,7 +13,8 @@ public class ConfigHandler
 		config.load();
 
 		sackBlacklist = config.get("blacklist", "burlapSackBlacklist", new String[0]);
-		sackBlacklist.setComment("A list of entity IDs to blacklist from the Burlap Sack. eg Llama");
+		sackBlacklist.setComment("A list of entity IDs to blacklist "
+				+ "from the Burlap Sack. eg Llama");
 
 		config.save();
 	}

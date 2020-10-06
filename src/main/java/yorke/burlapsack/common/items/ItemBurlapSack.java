@@ -34,10 +34,12 @@ public class ItemBurlapSack extends Item
 	}
 
 	@Override
-	public boolean itemInteractionForEntity (ItemStack item, EntityPlayer player, EntityLivingBase target, EnumHand hand)
+	public boolean itemInteractionForEntity (ItemStack item, EntityPlayer player,
+			EntityLivingBase target, EnumHand hand)
 	{
 		ItemStack stack = player.getHeldItem(hand);
-		if (!stack.hasTagCompound() && ! (target instanceof IMob) && target.isNonBoss() && !blacklist.contains(target.getClass()))
+		if (!stack.hasTagCompound() && ! (target instanceof IMob) && target.isNonBoss()
+				&& !blacklist.contains(target.getClass()))
 		{
 			NBTTagCompound tag = new NBTTagCompound();
 			if (!target.writeToNBTAtomically(tag)) return false;
@@ -49,13 +51,20 @@ public class ItemBurlapSack extends Item
 					ItemStack stack2 = stack.copy();
 					stack2.setCount(1);
 					stack2.setTagCompound(tag);
-					stack2.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " (" + (target.hasCustomName() ? target.getDisplayName().getUnformattedText() : target.getName()) + ")");
-					if (!player.addItemStackToInventory(stack2)) player.entityDropItem(stack2, (float) player.getEntityBoundingBox().maxY);
+					stack2.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " ("
+							+ (target.hasCustomName() ? target.getDisplayName().getUnformattedText()
+									: target.getName())
+							+ ")");
+					if (!player.addItemStackToInventory(stack2))
+						player.entityDropItem(stack2, (float) player.getEntityBoundingBox().maxY);
 				}
 				else
 				{
 					stack.setTagCompound(tag);
-					stack.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " (" + (target.hasCustomName() ? target.getDisplayName().getUnformattedText() : target.getName()) + ")");
+					stack.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " ("
+							+ (target.hasCustomName() ? target.getDisplayName().getUnformattedText()
+									: target.getName())
+							+ ")");
 				}
 				target.setDead();
 				return true;
@@ -65,7 +74,8 @@ public class ItemBurlapSack extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse (EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset)
+	public EnumActionResult onItemUse (EntityPlayer player, World world, BlockPos pos,
+			EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset)
 	{
 		if (world.isRemote) return EnumActionResult.PASS;
 
@@ -84,7 +94,9 @@ public class ItemBurlapSack extends Item
 			{
 				AxisAlignedBB bb = e.getEntityBoundingBox();
 
-				e.setLocationAndAngles(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ() + (bb.maxZ - bb.minZ) * 0.5 + offsetZ, world.rand.nextFloat() * 360.0F, 0.0F);
+				e.setLocationAndAngles(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY()
+						+ offsetY, pos.getZ() + (bb.maxZ - bb.minZ) * 0.5
+								+ offsetZ, world.rand.nextFloat() * 360.0F, 0.0F);
 				world.spawnEntity(e);
 
 				stack.setTagCompound(null);
