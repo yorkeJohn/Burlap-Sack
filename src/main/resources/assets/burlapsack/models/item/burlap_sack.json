@@ -2,6 +2,6 @@
   "parent": "minecraft:item/generated",
   "textures":
   {
-    "layer0": "burlapsack:items/burlap_sack"
+    "layer0": "burlapsack:item/burlap_sack"
   }
 }

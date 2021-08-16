@@ -2,122 +2,110 @@ package yorke.burlapsack.common.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Entity.RemovalReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.registries.ForgeRegistries;
 import yorke.burlapsack.common.BurlapSack;
 
-public class ItemBurlapSack extends Item
-{
-	private static List<Class<?>> blacklist = new ArrayList<>();
+public class ItemBurlapSack extends Item {
 
-	public ItemBurlapSack ()
-	{
-		this.setRegistryName("burlap_sack");
-		this.setUnlocalizedName("burlap_sack");
-		this.setCreativeTab(BurlapSack.tabBurlapSack);
-		this.setMaxStackSize(16);
+	// Entity blacklist
+	private static List<EntityType<?>> blacklist = new ArrayList<>();
+
+	public ItemBurlapSack () {
+		super(new Item.Properties().stacksTo(16).tab(BurlapSack.BURLAP_SACK_TAB));
 	}
 
 	@Override
-	public boolean itemInteractionForEntity (ItemStack item, EntityPlayer player,
-			EntityLivingBase target, EnumHand hand)
-	{
-		ItemStack stack = player.getHeldItem(hand);
-		if (!stack.hasTagCompound() && ! (target instanceof IMob) && target.isNonBoss()
-				&& !blacklist.contains(target.getClass()))
-		{
-			NBTTagCompound tag = new NBTTagCompound();
-			if (!target.writeToNBTAtomically(tag)) return false;
-			else
-			{
-				if (stack.getCount() > 1)
-				{
+	public InteractionResult interactLivingEntity (ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (!stack.hasTag() && ! (target instanceof Enemy) && !blacklist.contains(target.getType())) {
+			CompoundTag tag = new CompoundTag();
+			if (target.save(tag)) {
+				if (stack.getCount() > 1) {
 					stack.shrink(1);
 					ItemStack stack2 = stack.copy();
 					stack2.setCount(1);
-					stack2.setTagCompound(tag);
-					stack2.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " ("
-							+ (target.hasCustomName() ? target.getDisplayName().getUnformattedText()
-									: target.getName())
-							+ ")");
-					if (!player.addItemStackToInventory(stack2))
-						player.entityDropItem(stack2, (float) player.getEntityBoundingBox().maxY);
+					stack2.setTag(tag);
+					stack2.setHoverName(makeNewName(stack2, target));
+					if (!player.addItem(stack2)) player.drop(stack2, false);
 				}
-				else
-				{
-					stack.setTagCompound(tag);
-					stack.setStackDisplayName(TextFormatting.RESET + stack.getDisplayName() + " ("
-							+ (target.hasCustomName() ? target.getDisplayName().getUnformattedText()
-									: target.getName())
-							+ ")");
+				else {
+					stack.setTag(tag);
+					stack.setHoverName(makeNewName(stack, target));
 				}
-				target.setDead();
-				return true;
+				target.setRemoved(RemovalReason.KILLED);
+				return InteractionResult.SUCCESS;
 			}
+			else return InteractionResult.PASS;
 		}
-		else return false;
+		else return InteractionResult.PASS;
+	}
+
+	private TextComponent makeNewName (ItemStack stack, LivingEntity target) {
+		return new TextComponent(stack.getHoverName().getString() + " ("
+				+ (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")");
 	}
 
 	@Override
-	public EnumActionResult onItemUse (EntityPlayer player, World world, BlockPos pos,
-			EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset)
-	{
-		if (world.isRemote) return EnumActionResult.PASS;
+	public InteractionResult useOn (UseOnContext context) {
+		if (context.getPlayer().level.isClientSide) return InteractionResult.PASS;
 
-		int offsetX = side.getFrontOffsetX();
-		int offsetY = side.getFrontOffsetY();
-		int offsetZ = side.getFrontOffsetZ();
+		int offsetX = context.getClickedFace().getStepX();
+		int offsetY = context.getClickedFace().getStepY();
+		int offsetZ = context.getClickedFace().getStepZ();
 
-		ItemStack stack = player.getHeldItem(hand);
+		ItemStack stack = context.getItemInHand();
 
-		if (stack != null && stack.hasTagCompound())
-		{
-			NBTTagCompound tag = stack.getTagCompound();
-			Entity e = EntityList.createEntityFromNBT(tag, world);
+		if (stack != null && stack.hasTag()) {
+			CompoundTag tag = stack.getTag();
+			Optional<Entity> e = EntityType.create(tag, context.getPlayer().level);
 
-			if (e != null)
-			{
-				AxisAlignedBB bb = e.getEntityBoundingBox();
+			if (e.isPresent()) {
+				AABB bb = e.get().getBoundingBox();
+				BlockPos pos = context.getClickedPos();
 
-				e.setLocationAndAngles(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY()
-						+ offsetY, pos.getZ() + (bb.maxZ - bb.minZ) * 0.5
-								+ offsetZ, world.rand.nextFloat() * 360.0F, 0.0F);
-				world.spawnEntity(e);
+				e.get().setPos(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
+						+ (bb.maxZ - bb.minZ) * 0.5 + offsetZ);
+				e.get().setXRot(context.getPlayer().level.random.nextFloat() * 360.0F);
+				context.getPlayer().level.addFreshEntity(e.get());
 
-				stack.setTagCompound(null);
-				stack.clearCustomName();
+				stack.setTag(null);
+				stack.resetHoverName();
 
-				if (e instanceof EntityLiving) ((EntityLiving) e).playLivingSound();
+				if (e.get() instanceof Mob) ((Mob) e.get()).playAmbientSound();
 
-				return EnumActionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
-			else return EnumActionResult.PASS;
+			else return InteractionResult.PASS;
 		}
-		return EnumActionResult.PASS;
+		else return InteractionResult.PASS;
 	}
 
 	/**
 	 * Adds an entity to the Burlap Sack blacklist
 	 * 
-	 * @param entityClass The entity to blacklist's class
+	 * @param The name of the entity
 	 */
-	public static void blacklistEntity (Class<?> entityClass)
-	{
-		blacklist.add(entityClass);
+	public static void blacklistEntity (String entity) {
+		EntityType<?> entityClass = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entity));
+		if (entityClass != null) blacklist.add(entityClass);
 	}
 }

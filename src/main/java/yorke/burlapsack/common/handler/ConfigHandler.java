@@ -1,21 +1,28 @@
 package yorke.burlapsack.common.handler;
 
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ConfigHandler
-{
-	public static Configuration config;
-	public static Property sackBlacklist;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.common.Mod;
 
-	public static void loadConfig ()
-	{
-		config.load();
+@Mod.EventBusSubscriber
+public class ConfigHandler {
 
-		sackBlacklist = config.get("blacklist", "burlapSackBlacklist", new String[0]);
-		sackBlacklist.setComment("A list of entity IDs to blacklist "
-				+ "from the Burlap Sack. eg Llama");
+	public static ForgeConfigSpec CONFIG;
+	public static ForgeConfigSpec.ConfigValue<List<? extends String>> sackBlacklist;
+	private static final ForgeConfigSpec.Builder CONFIG_BUILDER = new ForgeConfigSpec.Builder();
 
-		config.save();
+	static {
+		buildConfig();
+		CONFIG = CONFIG_BUILDER.build();
 	}
+
+	private static void buildConfig () {
+		CONFIG_BUILDER.push("General");
+		CONFIG_BUILDER.comment("A list of entity IDs to blacklist from the Burlap Sack. eg [\"llama\", \"chicken\", \"pig\"]");
+		sackBlacklist = CONFIG_BUILDER.defineList("blacklist", new ArrayList<String>(), o -> o instanceof String);
+		CONFIG_BUILDER.pop();
+	}
+
 }

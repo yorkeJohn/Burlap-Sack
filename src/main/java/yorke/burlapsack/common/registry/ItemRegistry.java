@@ -1,39 +1,20 @@
 package yorke.burlapsack.common.registry;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import yorke.burlapsack.common.BurlapSack;
 import yorke.burlapsack.common.items.ItemBurlapSack;
 
 @Mod.EventBusSubscriber
-public class ItemRegistry
-{
-	public static Item BURLAP_FABRIC = new Item().setRegistryName("burlap_fabric")
-			.setUnlocalizedName("burlap_fabric").setCreativeTab(BurlapSack.tabBurlapSack);
-	public static ItemBurlapSack BURLAP_SACK = new ItemBurlapSack();
+public class ItemRegistry {
 
-	@SubscribeEvent
-	public static void registerItems (RegistryEvent.Register<Item> event)
-	{
-		event.getRegistry().register(BURLAP_FABRIC);
-		event.getRegistry().register(BURLAP_SACK);
-	}
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurlapSack.MODID);
 
-	@SubscribeEvent
-	public static void registerRenderers (ModelRegistryEvent event)
-	{
-		registerRenderer(BURLAP_FABRIC);
-		registerRenderer(BURLAP_SACK);
-	}
+	public static final RegistryObject<Item> BURLAP_FABRIC = ITEMS
+			.register("burlap_fabric", () -> new Item(new Item.Properties().tab(BurlapSack.BURLAP_SACK_TAB)));
+	public static final RegistryObject<Item> BURLAP_SACK = ITEMS.register("burlap_sack", ItemBurlapSack::new);
 
-	private static void registerRenderer (Item item)
-	{
-		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(
-				item.getRegistryName(), "inventory"));
-	}
 }
