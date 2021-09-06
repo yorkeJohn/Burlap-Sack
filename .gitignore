@@ -1,4 +1,6 @@
 # eclipse
+eclipse
+run
 bin
 *.launch
 .settings
@@ -8,17 +10,8 @@ bin
 
 # gradle
 build
-gradle
 .gradle
-build.gradle
 build_old.gradle
-gradlew
-gradlew.bat
-gradle.properties
-
-# other
-eclipse
-run
 
 # Files from Forge MDK
 forge*changelog.txt
