@@ -26,86 +26,86 @@ import yorke.burlapsack.common.BurlapSack;
 
 public class ItemBurlapSack extends Item {
 
-	// Entity blacklist
-	private static List<EntityType<?>> blacklist = new ArrayList<>();
+    // Entity blacklist
+    private static List<EntityType<?>> blacklist = new ArrayList<>();
 
-	public ItemBurlapSack () {
-		super(new Item.Properties().stacksTo(16).tab(BurlapSack.BURLAP_SACK_TAB));
-	}
+    public ItemBurlapSack () {
+        super(new Item.Properties().stacksTo(16).tab(BurlapSack.BURLAP_SACK_TAB));
+    }
 
-	@Override
-	public InteractionResult interactLivingEntity (ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
-		ItemStack stack = player.getItemInHand(hand);
-		if (!stack.hasTag() && ! (target instanceof Enemy) && !blacklist.contains(target.getType())) {
-			CompoundTag tag = new CompoundTag();
-			if (target.save(tag)) {
-				if (stack.getCount() > 1) {
-					stack.shrink(1);
-					ItemStack stack2 = stack.copy();
-					stack2.setCount(1);
-					stack2.setTag(tag);
-					stack2.setHoverName(makeNewName(stack2, target));
-					if (!player.addItem(stack2)) player.drop(stack2, false);
-				}
-				else {
-					stack.setTag(tag);
-					stack.setHoverName(makeNewName(stack, target));
-				}
-				target.setRemoved(RemovalReason.KILLED);
-				return InteractionResult.SUCCESS;
-			}
-			else return InteractionResult.PASS;
-		}
-		else return InteractionResult.PASS;
-	}
+    @Override
+    public InteractionResult interactLivingEntity (ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.hasTag() && ! (target instanceof Enemy) && !blacklist.contains(target.getType())) {
+            CompoundTag tag = new CompoundTag();
+            if (target.save(tag)) {
+                if (stack.getCount() > 1) {
+                    stack.shrink(1);
+                    ItemStack stack2 = stack.copy();
+                    stack2.setCount(1);
+                    stack2.setTag(tag);
+                    stack2.setHoverName(makeNewName(stack2, target));
+                    if (!player.addItem(stack2)) player.drop(stack2, false);
+                }
+                else {
+                    stack.setTag(tag);
+                    stack.setHoverName(makeNewName(stack, target));
+                }
+                target.setRemoved(RemovalReason.KILLED);
+                return InteractionResult.SUCCESS;
+            }
+            else return InteractionResult.PASS;
+        }
+        else return InteractionResult.PASS;
+    }
 
-	private TextComponent makeNewName (ItemStack stack, LivingEntity target) {
-		return new TextComponent(stack.getHoverName().getString() + " ("
-				+ (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")");
-	}
+    private TextComponent makeNewName (ItemStack stack, LivingEntity target) {
+        return new TextComponent(stack.getHoverName().getString() + " ("
+                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")");
+    }
 
-	@Override
-	public InteractionResult useOn (UseOnContext context) {
-		if (context.getPlayer().level.isClientSide) return InteractionResult.PASS;
+    @Override
+    public InteractionResult useOn (UseOnContext context) {
+        if (context.getPlayer().level.isClientSide) return InteractionResult.PASS;
 
-		int offsetX = context.getClickedFace().getStepX();
-		int offsetY = context.getClickedFace().getStepY();
-		int offsetZ = context.getClickedFace().getStepZ();
+        int offsetX = context.getClickedFace().getStepX();
+        int offsetY = context.getClickedFace().getStepY();
+        int offsetZ = context.getClickedFace().getStepZ();
 
-		ItemStack stack = context.getItemInHand();
+        ItemStack stack = context.getItemInHand();
 
-		if (stack != null && stack.hasTag()) {
-			CompoundTag tag = stack.getTag();
-			Optional<Entity> e = EntityType.create(tag, context.getPlayer().level);
+        if (stack != null && stack.hasTag()) {
+            CompoundTag tag = stack.getTag();
+            Optional<Entity> e = EntityType.create(tag, context.getPlayer().level);
 
-			if (e.isPresent()) {
-				AABB bb = e.get().getBoundingBox();
-				BlockPos pos = context.getClickedPos();
+            if (e.isPresent()) {
+                AABB bb = e.get().getBoundingBox();
+                BlockPos pos = context.getClickedPos();
 
-				e.get().setPos(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
-						+ (bb.maxZ - bb.minZ) * 0.5 + offsetZ);
-				e.get().setXRot(context.getPlayer().level.random.nextFloat() * 360.0F);
-				context.getPlayer().level.addFreshEntity(e.get());
+                e.get().setPos(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
+                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ);
+                e.get().setXRot(context.getPlayer().level.random.nextFloat() * 360.0F);
+                context.getPlayer().level.addFreshEntity(e.get());
 
-				stack.setTag(null);
-				stack.resetHoverName();
+                stack.setTag(null);
+                stack.resetHoverName();
 
-				if (e.get() instanceof Mob) ((Mob) e.get()).playAmbientSound();
+                if (e.get() instanceof Mob) ((Mob) e.get()).playAmbientSound();
 
-				return InteractionResult.SUCCESS;
-			}
-			else return InteractionResult.PASS;
-		}
-		else return InteractionResult.PASS;
-	}
+                return InteractionResult.SUCCESS;
+            }
+            else return InteractionResult.PASS;
+        }
+        else return InteractionResult.PASS;
+    }
 
-	/**
-	 * Adds an entity to the Burlap Sack blacklist
-	 * 
-	 * @param The name of the entity
-	 */
-	public static void blacklistEntity (String entity) {
-		EntityType<?> entityClass = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entity));
-		if (entityClass != null) blacklist.add(entityClass);
-	}
+    /**
+     * Adds an entity to the Burlap Sack blacklist
+     * 
+     * @param The name of the entity
+     */
+    public static void blacklistEntity (String entity) {
+        EntityType<?> entityClass = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entity));
+        if (entityClass != null) blacklist.add(entityClass);
+    }
 }
