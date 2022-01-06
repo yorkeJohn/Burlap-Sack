@@ -1,8 +1,8 @@
 package yorke.burlapsack.common.registry;
 
-import net.minecraft.world.item.Item;
+import net.minecraft.item.Item;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import yorke.burlapsack.common.BurlapSack;

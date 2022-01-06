@@ -2,8 +2,8 @@ package yorke.burlapsack.common;
 
 import java.util.List;
 
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -18,7 +18,7 @@ import yorke.burlapsack.common.registry.ItemRegistry;
 public class BurlapSack {
 
     public static final String MODID = "burlapsack";
-    public static final CreativeModeTab BURLAP_SACK_TAB = new CreativeModeTab(MODID) {
+    public static final ItemGroup BURLAP_SACK_TAB = new ItemGroup(MODID) {
         @Override
         public ItemStack makeIcon () {
             return new ItemStack(ItemRegistry.BURLAP_SACK.get());

@@ -4,23 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 import yorke.burlapsack.common.BurlapSack;
 
@@ -34,10 +35,10 @@ public class ItemBurlapSack extends Item {
     }
 
     @Override
-    public InteractionResult interactLivingEntity (ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
+    public ActionResultType interactLivingEntity (ItemStack item, PlayerEntity player, LivingEntity target, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!stack.hasTag() && ! (target instanceof Enemy) && !blacklist.contains(target.getType())) {
-            CompoundTag tag = new CompoundTag();
+        if (!stack.hasTag() && ! (target instanceof MonsterEntity) && !blacklist.contains(target.getType())) {
+            CompoundNBT tag = new CompoundNBT();
             if (target.save(tag)) {
                 if (stack.getCount() > 1) {
                     stack.shrink(1);
@@ -51,22 +52,23 @@ public class ItemBurlapSack extends Item {
                     stack.setTag(tag);
                     stack.setHoverName(makeNewName(stack, target));
                 }
-                target.setRemoved(RemovalReason.KILLED);
-                return InteractionResult.SUCCESS;
+                target.remove();
+                return ActionResultType.SUCCESS;
             }
-            else return InteractionResult.PASS;
+            else return ActionResultType.PASS;
         }
-        else return InteractionResult.PASS;
+        else return ActionResultType.PASS;
     }
 
-    private TextComponent makeNewName (ItemStack stack, LivingEntity target) {
-        return new TextComponent(stack.getHoverName().getString() + " ("
-                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")");
+    private IFormattableTextComponent makeNewName (ItemStack stack, LivingEntity target) {
+        return new TranslationTextComponent(stack.getHoverName().getString() + " ("
+                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")")
+                        .setStyle(Style.EMPTY.withItalic(false));
     }
 
     @Override
-    public InteractionResult useOn (UseOnContext context) {
-        if (context.getPlayer().level.isClientSide) return InteractionResult.PASS;
+    public ActionResultType useOn (ItemUseContext context) {
+        if (context.getPlayer().level.isClientSide) return ActionResultType.PASS;
 
         int offsetX = context.getClickedFace().getStepX();
         int offsetY = context.getClickedFace().getStepY();
@@ -75,33 +77,32 @@ public class ItemBurlapSack extends Item {
         ItemStack stack = context.getItemInHand();
 
         if (stack != null && stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+            CompoundNBT tag = stack.getTag();
             Optional<Entity> e = EntityType.create(tag, context.getPlayer().level);
 
             if (e.isPresent()) {
-                AABB bb = e.get().getBoundingBox();
+                AxisAlignedBB bb = e.get().getBoundingBox();
                 BlockPos pos = context.getClickedPos();
 
-                e.get().setPos(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
-                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ);
-                e.get().setXRot(context.getPlayer().level.random.nextFloat() * 360.0F);
+                e.get().moveTo(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
+                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ, context.getPlayer().level.random.nextFloat() * 360.0F, 0);
                 context.getPlayer().level.addFreshEntity(e.get());
 
                 stack.setTag(null);
                 stack.resetHoverName();
 
-                if (e.get() instanceof Mob) ((Mob) e.get()).playAmbientSound();
+                if (e.get() instanceof MobEntity) ((MobEntity) e.get()).playAmbientSound();
 
-                return InteractionResult.SUCCESS;
+                return ActionResultType.SUCCESS;
             }
-            else return InteractionResult.PASS;
+            else return ActionResultType.PASS;
         }
-        else return InteractionResult.PASS;
+        else return ActionResultType.PASS;
     }
 
     /**
      * Adds an entity to the Burlap Sack blacklist
-     * 
+     *
      * @param The name of the entity
      */
     public static void blacklistEntity (String entity) {
