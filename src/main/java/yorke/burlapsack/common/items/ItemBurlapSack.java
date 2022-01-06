@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -59,9 +61,10 @@ public class ItemBurlapSack extends Item {
         else return InteractionResult.PASS;
     }
 
-    private TextComponent makeNewName (ItemStack stack, LivingEntity target) {
+    private MutableComponent makeNewName (ItemStack stack, LivingEntity target) {
         return new TextComponent(stack.getHoverName().getString() + " ("
-                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")");
+                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")")
+                        .setStyle(Style.EMPTY.withItalic(false));
     }
 
     @Override

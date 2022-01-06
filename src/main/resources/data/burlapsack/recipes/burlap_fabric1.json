@@ -1,30 +1,20 @@
 {
+  "group": "burlapsack",
   "type": "minecraft:crafting_shaped",
-  "pattern":
-  [
+  "pattern": [
     "AB",
     "BA"
   ],
-  "key":
-  {
-    "A":
-    [
-      {
-        "item": "minecraft:string",
-        "data": 0
-      }
-    ],
-    "B":
-    [
-      {
-        "item": "minecraft:wheat",
-        "data": 0
-      }
-    ]
+  "key": {
+    "A": {
+      "item": "minecraft:string"
+    },
+    "B": {
+      "item": "minecraft:wheat"
+    }
   },
-  "result":
-  {
+  "result": {
     "item": "burlapsack:burlap_fabric",
-    "data": 0
+    "count": 1
   }
 }
