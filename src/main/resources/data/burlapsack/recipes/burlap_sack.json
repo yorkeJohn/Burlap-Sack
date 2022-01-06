@@ -1,31 +1,21 @@
 {
+  "group": "burlapsack",
   "type": "minecraft:crafting_shaped",
-  "pattern":
-  [
+  "pattern": [
     "ABA",
     "A A",
     "AAA"
   ],
-  "key":
-  {
-    "A":
-    [
-      {
-        "item": "burlapsack:burlap_fabric",
-        "data": 0
-      }
-    ],
-    "B":
-    [
-      {
-        "item": "minecraft:string",
-        "data": 0
-      }
-    ]
+  "key": {
+    "A": {
+      "item": "burlapsack:burlap_fabric"
+    },
+    "B": {
+      "item": "minecraft:string"
+    }
   },
-  "result":
-  {
+  "result": {
     "item": "burlapsack:burlap_sack",
-    "data": 0
+    "count": 1
   }
 }
