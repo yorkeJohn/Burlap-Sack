@@ -85,9 +85,9 @@ public class ItemBurlapSack extends Item {
                 AABB bb = e.get().getBoundingBox();
                 BlockPos pos = context.getClickedPos();
 
-                e.get().setPos(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
-                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ);
-                e.get().setXRot(context.getPlayer().level.random.nextFloat() * 360.0F);
+                e.get().moveTo(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
+                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ, context.getPlayer().level.random.nextFloat() * 360.0F, 0);
+
                 context.getPlayer().level.addFreshEntity(e.get());
 
                 stack.setTag(null);
