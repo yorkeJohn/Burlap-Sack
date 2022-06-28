@@ -1,14 +1,9 @@
 package yorke.burlapsack.common.items;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,19 +21,23 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.registries.ForgeRegistries;
 import yorke.burlapsack.common.BurlapSack;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class ItemBurlapSack extends Item {
 
     // Entity blacklist
-    private static List<EntityType<?>> blacklist = new ArrayList<>();
+    private static final List<EntityType<?>> blacklist = new ArrayList<>();
 
-    public ItemBurlapSack () {
+    public ItemBurlapSack() {
         super(new Item.Properties().stacksTo(16).tab(BurlapSack.BURLAP_SACK_TAB));
     }
 
     @Override
-    public InteractionResult interactLivingEntity (ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
+    public InteractionResult interactLivingEntity(ItemStack item, Player player, LivingEntity target, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!stack.hasTag() && ! (target instanceof Enemy) && !blacklist.contains(target.getType())) {
+        if (!stack.hasTag() && !(target instanceof Enemy) && !blacklist.contains(target.getType())) {
             CompoundTag tag = new CompoundTag();
             if (target.save(tag)) {
                 if (stack.getCount() > 1) {
@@ -48,27 +47,22 @@ public class ItemBurlapSack extends Item {
                     stack2.setTag(tag);
                     stack2.setHoverName(makeNewName(stack2, target));
                     if (!player.addItem(stack2)) player.drop(stack2, false);
-                }
-                else {
+                } else {
                     stack.setTag(tag);
                     stack.setHoverName(makeNewName(stack, target));
                 }
                 target.setRemoved(RemovalReason.KILLED);
                 return InteractionResult.SUCCESS;
-            }
-            else return InteractionResult.PASS;
-        }
-        else return InteractionResult.PASS;
+            } else return InteractionResult.PASS;
+        } else return InteractionResult.PASS;
     }
 
-    private MutableComponent makeNewName (ItemStack stack, LivingEntity target) {
-        return new TextComponent(stack.getHoverName().getString() + " ("
-                + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")")
-                        .setStyle(Style.EMPTY.withItalic(false));
+    private Component makeNewName(ItemStack stack, LivingEntity target) {
+        return Component.literal(stack.getHoverName().getString() + " (" + (target.hasCustomName() ? target.getDisplayName() : target.getName().getString()) + ")").setStyle(Style.EMPTY.withItalic(false));
     }
 
     @Override
-    public InteractionResult useOn (UseOnContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer().level.isClientSide) return InteractionResult.PASS;
 
         int offsetX = context.getClickedFace().getStepX();
@@ -85,8 +79,7 @@ public class ItemBurlapSack extends Item {
                 AABB bb = e.get().getBoundingBox();
                 BlockPos pos = context.getClickedPos();
 
-                e.get().moveTo(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ()
-                        + (bb.maxZ - bb.minZ) * 0.5 + offsetZ, context.getPlayer().level.random.nextFloat() * 360.0F, 0);
+                e.get().moveTo(pos.getX() + (bb.maxX - bb.minX) * 0.5 + offsetX, pos.getY() + offsetY, pos.getZ() + (bb.maxZ - bb.minZ) * 0.5 + offsetZ, context.getPlayer().level.random.nextFloat() * 360.0F, 0);
 
                 context.getPlayer().level.addFreshEntity(e.get());
 
@@ -96,18 +89,16 @@ public class ItemBurlapSack extends Item {
                 if (e.get() instanceof Mob) ((Mob) e.get()).playAmbientSound();
 
                 return InteractionResult.SUCCESS;
-            }
-            else return InteractionResult.PASS;
-        }
-        else return InteractionResult.PASS;
+            } else return InteractionResult.PASS;
+        } else return InteractionResult.PASS;
     }
 
     /**
      * Adds an entity to the Burlap Sack blacklist
-     * 
-     * @param The name of the entity
+     *
+     * @param entity The name of the entity
      */
-    public static void blacklistEntity (String entity) {
+    public static void blacklistEntity(String entity) {
         EntityType<?> entityClass = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entity));
         if (entityClass != null) blacklist.add(entityClass);
     }

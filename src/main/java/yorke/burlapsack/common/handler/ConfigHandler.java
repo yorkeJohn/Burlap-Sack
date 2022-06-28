@@ -1,10 +1,10 @@
 package yorke.burlapsack.common.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber
 public class ConfigHandler {
@@ -18,7 +18,7 @@ public class ConfigHandler {
         CONFIG = CONFIG_BUILDER.build();
     }
 
-    private static void buildConfig () {
+    private static void buildConfig() {
         CONFIG_BUILDER.push("General");
         CONFIG_BUILDER.comment("A list of entity IDs to blacklist from the Burlap Sack. eg [\"llama\", \"chicken\", \"pig\"]");
         sackBlacklist = CONFIG_BUILDER.defineList("blacklist", new ArrayList<String>(), o -> o instanceof String);

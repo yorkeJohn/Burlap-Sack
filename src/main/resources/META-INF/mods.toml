@@ -1,11 +1,11 @@
 # Burlap Sack
 modLoader="javafml"
-loaderVersion="[39,)"
+loaderVersion="[41,)"
 license="Apache-2.0 License"
 issueTrackerURL="https://github.com/yorkeJohn/Burlap-Sack/issues"
 [[mods]]
   modId="burlapsack"
-  version="1.18.1-1.0"
+  version="1.19-1.0"
   displayName="Burlap Sack"
   displayURL="https://www.curseforge.com/minecraft/mc-mods/burlap-sack"
   logoFile="burlap_sack_logo.png"
@@ -14,12 +14,12 @@ issueTrackerURL="https://github.com/yorkeJohn/Burlap-Sack/issues"
 [[dependencies.burlapsack]]
   modId="forge"
   mandatory=true
-  versionRange="[39,)"
+  versionRange="[41,)"
   ordering="NONE"
   side="BOTH"
 [[dependencies.burlapsack]]
   modId="minecraft"
   mandatory=true
-  versionRange="[1.18.1,)"
+  versionRange="[1.19,)"
   ordering="NONE"
   side="BOTH"
